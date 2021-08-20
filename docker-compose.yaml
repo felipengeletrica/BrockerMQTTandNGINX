@@ -1,0 +1,37 @@
+version: "3.7"
+
+services:
+
+  nginx:
+    image: nginx
+    container_name: nginx-brocker
+    volumes:
+      - ./utils/nginx:/etc/nginx/conf.d
+    ports:
+      - "1883:1883"
+    networks:
+      - brocker-network
+    depends_on: 
+      - eclipse-mosquitto
+
+  eclipse-mosquitto:
+    image: eclipse-mosquitto
+    deploy:
+      replicas: 5
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/logs
+      - mosquitto-conf:/mosquitto/config
+    restart: unless-stopped
+
+volumes:
+  store:
+  config:
+  mosquitto-data:
+  mosquitto-logs:
+  mosquitto-conf:
+
+networks:
+  brocker-network:
+    external:
+      name: brocker-network
